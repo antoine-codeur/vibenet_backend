@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\BlogController;
+use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use Illuminate\Http\Request;
@@ -35,5 +36,11 @@ Route::prefix('v1')->group(function () {
         Route::get('posts/{id}', [PostController::class, 'show']); // Récupérer un post par ID
         Route::put('posts/{id}', [PostController::class, 'update']); // Mettre à jour un post
         Route::delete('posts/{id}', [PostController::class, 'destroy']); // Supprimer un post
+
+        // CommentController routes
+        Route::post('posts/{postId}/comments', [CommentController::class, 'store']);
+        Route::get('posts/{postId}/comments', [CommentController::class, 'index']);
+        Route::delete('comments/{id}', [CommentController::class, 'destroy']);
+        Route::put('comments/{id}/toggle', [CommentController::class, 'toggleVisibility']);
     });
 });
