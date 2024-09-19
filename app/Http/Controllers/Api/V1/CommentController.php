@@ -47,7 +47,7 @@ class CommentController extends BaseController
     public function store(Request $request, $postId)
     {
         $validator = Validator::make($request->all(), [
-            'content' => 'required|max:2000', // Max 2000 characters
+            'content' => 'required|max:2000',
         ]);
 
         if ($validator->fails()) {
@@ -63,6 +63,7 @@ class CommentController extends BaseController
             'post_id' => $postId,
             'user_id' => auth()->id(),
             'content' => $request->content,
+            'is_visible' => true, // Default to visible when created
         ]);
 
         return $this->sendResponse($comment, 'Comment created successfully.', 201);
@@ -94,7 +95,21 @@ class CommentController extends BaseController
             return $this->sendError('Post not found.');
         }
 
-        $comments = Comment::where('post_id', $postId)->where('is_visible', true)->get();
+        $userId = auth()->id();
+        
+        // Retrieve comments based on visibility rules
+        $comments = Comment::where('post_id', $postId)
+            ->where(function ($query) use ($userId) {
+                $query->where('is_visible', true)
+                    ->orWhere('user_id', $userId) // User can see their own comments
+                    ->orWhere('post_id', function($subQuery) use ($userId) {
+                        $subQuery->select('id')
+                                    ->from('posts')
+                                    ->where('owner_id', $userId); // Owner can see all comments on their posts
+                    });
+            })
+            ->get();
+
         return $this->sendResponse($comments, 'Comments retrieved successfully.');
     }
 
@@ -169,7 +184,12 @@ class CommentController extends BaseController
             return $this->sendError('Comment not found.');
         }
 
-        // Check if the user is the owner of the comment
+        // Check if the user is the owner of the comment or the post
+        if (auth()->id() !== $comment->user_id && auth()->id() !== $comment->post->owner_id) {
+            return $this->sendError('Unauthorized to toggle comment visibility.');
+        }
+
+        // Toggle the visibility
         $comment->is_visible = !$comment->is_visible;
         $comment->save();
 
