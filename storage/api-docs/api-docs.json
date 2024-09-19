@@ -503,6 +503,233 @@
                 ]
             }
         },
+        "/api/v1/posts/{postId}/comments": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Get comments for a post",
+                "operationId": "0d68cf2f1a3df01eb5268589b2421076",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of comments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Comment"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Create a new comment",
+                "operationId": "c471e8f667c8c304eddf313ee4cf820d",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "example": "This is a comment."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/comments/{id}": {
+            "delete": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Delete a comment",
+                "operationId": "adac37d4052e17e8f62386dd2e06b6c9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/comments/{id}/toggle": {
+            "put": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Toggle comment visibility",
+                "operationId": "e1301dbec0c986a975d3b33e56a11b13",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment visibility toggled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment visibility toggled."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/blogs/{blogId}/posts": {
             "get": {
                 "tags": [
@@ -1006,6 +1233,47 @@
                 },
                 "type": "object"
             },
+            "Comment": {
+                "required": [
+                    "id",
+                    "post_id",
+                    "user_id",
+                    "content"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "post_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "content": {
+                        "type": "string",
+                        "example": "This is a comment."
+                    },
+                    "is_visible": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-09-19T08:53:09.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-09-19T08:53:09.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "Post": {
                 "required": [
                     "id",
@@ -1094,6 +1362,10 @@
         {
             "name": "Blogs",
             "description": "Blogs"
+        },
+        {
+            "name": "Comments",
+            "description": "Comments"
         },
         {
             "name": "Posts",
