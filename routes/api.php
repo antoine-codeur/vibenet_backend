@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\BlogController;
+use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,5 +28,12 @@ Route::prefix('v1')->group(function () {
         Route::get('blogs/{id}', [BlogController::class, 'show']);
         Route::put('blogs/{id}', [BlogController::class, 'update']);
         Route::delete('blogs/{id}', [BlogController::class, 'destroy']);
+
+        // PostController routes
+        Route::post('blogs/{blogId}/posts', [PostController::class, 'store']); // Créer un post
+        Route::get('blogs/{blogId}/posts', [PostController::class, 'index']); // Récupérer les posts d'un blog
+        Route::get('posts/{id}', [PostController::class, 'show']); // Récupérer un post par ID
+        Route::put('posts/{id}', [PostController::class, 'update']); // Mettre à jour un post
+        Route::delete('posts/{id}', [PostController::class, 'destroy']); // Supprimer un post
     });
 });
