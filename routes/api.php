@@ -25,7 +25,7 @@ Route::prefix('v1')->group(function () {
         // AdminController routes
         Route::prefix('admin')->middleware(['admin'])->group(function () {
             Route::get('blogs', [AdminController::class, 'listBlogs']);
-            Route::delete('blogs/{id}', [AdminController::class, 'destroyBlog']); // Add method to delete blog
+            Route::delete('blogs/{id}', [AdminController::class, 'destroyBlog']); // Delete blog
             Route::get('posts', [AdminController::class, 'listPosts']);
             Route::delete('posts/{id}', [AdminController::class, 'destroyPost']); // Delete post
             Route::get('comments', [AdminController::class, 'listComments']);
@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
             Route::get('users', [AdminController::class, 'listUsers']);
             Route::delete('users/{id}', [AdminController::class, 'destroyUser']); // Delete user
             Route::get('uploads', [AdminController::class, 'listUploads']);
-            Route::delete('uploads/posts/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
+            Route::delete('uploads/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
         });
 
         // ProfileController routes
