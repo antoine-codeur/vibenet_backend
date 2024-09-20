@@ -19,13 +19,23 @@ class BlogController extends BaseController
      *     @OA\Response(
      *         response=200,
      *         description="List of blogs",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Blog"))
+     *         @OA\JsonContent(type="array", @OA\Items(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image", type="string"),
+     *             @OA\Property(property="owner", type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="profile_picture", type="string")
+     *             )
+     *         ))
      *     )
      * )
      */
     public function index()
     {
-        $blogs = Blog::all();
+        $blogs = Blog::with('owner:id,name,profile_picture')->get();
         return $this->sendResponse($blogs, 'Blogs retrieved successfully.');
     }
 
@@ -115,7 +125,17 @@ class BlogController extends BaseController
      *     @OA\Response(
      *         response=200,
      *         description="Blog retrieved successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/Blog")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image", type="string"),
+     *             @OA\Property(property="owner", type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="profile_picture", type="string")
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -129,7 +149,7 @@ class BlogController extends BaseController
      */
     public function show($id)
     {
-        $blog = Blog::find($id);
+        $blog = Blog::with('owner:id,name,profile_picture')->find($id);
         if (!$blog) {
             return $this->sendError('Blog not found.');
         }
