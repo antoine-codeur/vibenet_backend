@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends BaseController
 {
@@ -269,12 +270,11 @@ class AdminController extends BaseController
      */
     public function listUploads()
     {
-        // Retrieve all files
         $files = Storage::disk('public')->allFiles('uploads');
 
         // Filter out unwanted files like .DS_Store
         $filteredFiles = array_filter($files, function ($file) {
-            return !preg_match('/\.(DS_Store|tmp|log)$/', basename($file)); // Exclude unwanted files
+            return !preg_match('/\.(DS_Store|tmp|log)$/', basename($file));
         });
 
         // Create an array with file paths and their modification times
@@ -288,13 +288,12 @@ class AdminController extends BaseController
 
         // Sort the files by last modified date
         usort($fileDetails, function ($a, $b) {
-            return $b['last_modified'] <=> $a['last_modified']; // Descending order
+            return $b['last_modified'] <=> $a['last_modified'];
         });
 
-        // Extract the sorted file paths
         $sortedFiles = array_column($fileDetails, 'path');
 
-        \Log::info('Uploaded files:', $sortedFiles); // Log the retrieved files
+        \Log::info('Uploaded files:', $sortedFiles);
 
         if (empty($sortedFiles)) {
             return $this->sendError('No uploaded files found.');

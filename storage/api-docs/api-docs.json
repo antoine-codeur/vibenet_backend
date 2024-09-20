@@ -717,7 +717,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -731,6 +731,10 @@
                                     "description": {
                                         "type": "string",
                                         "example": "This is my first blog."
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -835,12 +839,12 @@
                     }
                 ]
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Blogs"
                 ],
                 "summary": "Update a blog",
-                "operationId": "9074ab1de329704c677d6b00e748c236",
+                "operationId": "6138ec62aa12349262629dfc4df38b28",
                 "parameters": [
                     {
                         "name": "id",
@@ -854,7 +858,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -868,6 +872,10 @@
                                     "description": {
                                         "type": "string",
                                         "example": "Updated description."
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -1383,12 +1391,78 @@
                     }
                 ]
             },
-            "put": {
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a post",
+                "operationId": "8fb9e5c3ba57e2f3e8132eb58603be93",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/posts/{id}/update": {
+            "post": {
                 "tags": [
                     "Posts"
                 ],
                 "summary": "Update a post",
-                "operationId": "c370d1b954b66963a8cb7758b219bea3",
+                "operationId": "383ce8b9e6c47ed8db921b12efe51ac3",
                 "parameters": [
                     {
                         "name": "id",
@@ -1463,70 +1537,6 @@
                         "bearerAuth": []
                     }
                 ]
-            },
-            "delete": {
-                "tags": [
-                    "Posts"
-                ],
-                "summary": "Delete a post",
-                "operationId": "8fb9e5c3ba57e2f3e8132eb58603be93",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Post deleted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Post deleted successfully."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Post not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Post not found."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
             }
         },
         "/api/v1/profile": {
@@ -1535,7 +1545,7 @@
                     "Profile"
                 ],
                 "summary": "Get the authenticated user's profile",
-                "operationId": "74bd0f9272b49f847e45d0f56cfc43a7",
+                "operationId": "dffac35700b3186de8d19cc212fe0285",
                 "responses": {
                     "200": {
                         "description": "User profile retrieved",
@@ -1570,32 +1580,37 @@
                     }
                 ]
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Profile"
                 ],
                 "summary": "Update the authenticated user's profile",
-                "operationId": "1368e6532736dc719eac2c6b83882fb9",
+                "operationId": "55fd80581c2975882e050efd0f2424d8",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "name": {
-                                        "description": "Name of the user",
                                         "type": "string",
                                         "example": "John Doe"
                                     },
                                     "email": {
-                                        "description": "Email of the user",
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "example": "user@example.com"
                                     },
                                     "password": {
-                                        "description": "Password of the user",
                                         "type": "string",
                                         "example": "new_password123"
+                                    },
+                                    "profile_picture": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "bio": {
+                                        "type": "string",
+                                        "example": "Software Developer with 5 years of experience."
                                     }
                                 },
                                 "type": "object"
@@ -1642,7 +1657,7 @@
                     "Profile"
                 ],
                 "summary": "Delete the authenticated user's profile",
-                "operationId": "caf0b8e222e7e9d877bb4b0fdaf2fd24",
+                "operationId": "1ff6008fa8add2b38d7da7362d84e007",
                 "responses": {
                     "200": {
                         "description": "Profile deleted successfully",
@@ -1704,6 +1719,10 @@
                     "owner_id": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "uploads/blog_images/my_first_blog.jpg"
                     }
                 },
                 "type": "object"
@@ -1795,7 +1814,6 @@
                 "type": "object"
             },
             "User": {
-                "title": "User",
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1807,6 +1825,12 @@
                     "email": {
                         "type": "string",
                         "format": "email"
+                    },
+                    "profile_picture": {
+                        "type": "string"
+                    },
+                    "bio": {
+                        "type": "string"
                     },
                     "created_at": {
                         "type": "string",
