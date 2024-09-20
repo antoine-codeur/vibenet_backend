@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="name", type="string", example="My First Blog"),
  *     @OA\Property(property="description", type="string", example="This is the description of my first blog."),
  *     @OA\Property(property="owner_id", type="integer", example=1),
+ *     @OA\Property(property="image", type="string", example="uploads/blog_images/my_first_blog.jpg"),
  * )
  */
 class Blog extends Model
@@ -24,7 +25,7 @@ class Blog extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'owner_id'
+        'name', 'description', 'owner_id', 'image' // Added image to fillable attributes
     ];
 
     /**

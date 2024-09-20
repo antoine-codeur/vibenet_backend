@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\V1;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends BaseController
 {
@@ -68,7 +70,7 @@ class PostController extends BaseController
         $fileUrl = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            if (in_array($file->getMimeType(), haystack: $allowedFileTypes)) {
+            if (in_array($file->getMimeType(), $allowedFileTypes)) {
                 $filePath = $file->store('uploads/posts', 'public');
                 $fileUrl = '/storage/' . $filePath;
             } else {
@@ -208,9 +210,12 @@ class PostController extends BaseController
             return $this->sendError('Post not found.');
         }
 
-        // Handle file upload if provided
+        // Handle file upload and deletion of the old image
         $fileUrl = $post->image_url; // Keep existing URL if no new file is uploaded
         if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            $this->deletePostImage($post->image_url);
+
             $file = $request->file('image');
             if (in_array($file->getMimeType(), $this->getAllowedFileTypes())) {
                 $filePath = $file->store('uploads/posts', 'public');
@@ -267,8 +272,36 @@ class PostController extends BaseController
             return $this->sendError('Post not found.');
         }
 
+        // Delete image if it exists
+        if ($post->image_url) {
+            $this->deletePostImage($post->image_url);
+        }
+
         $post->delete();
         return $this->sendResponse([], 'Post deleted successfully.');
+    }
+
+    public function deletePostImage($oldImageUrl)
+    {
+        if ($oldImageUrl) {
+            Log::info("Checking existence of post image: $oldImageUrl");
+
+            if (Storage::disk('public')->exists(str_replace('/storage/', '', $oldImageUrl))) {
+                if (Storage::disk('public')->delete(str_replace('/storage/', '', $oldImageUrl))) {
+                    Log::info("Post image deleted: $oldImageUrl");
+                    return true;
+                } else {
+                    Log::error("Failed to delete post image: $oldImageUrl");
+                    return false;
+                }
+            } else {
+                Log::warning("Post image not found: $oldImageUrl");
+                return false;
+            }
+        }
+
+        Log::warning("No post image to delete.");
+        return false;
     }
 
     protected function getAllowedFileTypes()

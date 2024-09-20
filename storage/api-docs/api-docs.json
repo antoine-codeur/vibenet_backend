@@ -717,7 +717,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -731,6 +731,10 @@
                                     "description": {
                                         "type": "string",
                                         "example": "This is my first blog."
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -835,12 +839,12 @@
                     }
                 ]
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Blogs"
                 ],
                 "summary": "Update a blog",
-                "operationId": "9074ab1de329704c677d6b00e748c236",
+                "operationId": "6138ec62aa12349262629dfc4df38b28",
                 "parameters": [
                     {
                         "name": "id",
@@ -854,7 +858,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -868,6 +872,10 @@
                                     "description": {
                                         "type": "string",
                                         "example": "Updated description."
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -1711,6 +1719,10 @@
                     "owner_id": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "uploads/blog_images/my_first_blog.jpg"
                     }
                 },
                 "type": "object"
