@@ -40,7 +40,7 @@ class ProfileController extends Controller
      *     )
      * )
      */
-    public function profile(Request $request)
+    public function show(Request $request)
     {
         return response()->json($request->user());
     }
@@ -71,6 +71,18 @@ class ProfileController extends Controller
      *                 type="string",
      *                 description="Password of the user",
      *                 example="new_password123"
+     *             ),
+     *             @OA\Property(
+     *                 property="profile_picture",
+     *                 type="string",
+     *                 description="URL of the user's profile picture",
+     *                 example="https://example.com/path/to/profile.jpg"
+     *             ),
+     *             @OA\Property(
+     *                 property="bio",
+     *                 type="string",
+     *                 description="Short bio of the user",
+     *                 example="Software Developer with 5 years of experience."
      *             )
      *         )
      *     ),
@@ -92,7 +104,7 @@ class ProfileController extends Controller
      *     )
      * )
      */
-    public function updateProfile(Request $request)
+    public function update(Request $request)
     {
         $user = $request->user();
 
@@ -101,6 +113,8 @@ class ProfileController extends Controller
                 'name' => ['sometimes', 'string', 'max:255'],
                 'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
                 'password' => ['sometimes', 'string', 'min:8'],
+                'profile_picture' => ['sometimes', 'string', 'max:255'],
+                'bio' => ['sometimes', 'string', 'max:500'],
             ]);
 
             if (isset($validatedData['password'])) {
@@ -145,7 +159,7 @@ class ProfileController extends Controller
      *     )
      * )
      */
-    public function deleteProfile(Request $request)
+    public function delete(Request $request)
     {
         $user = $request->user();
 

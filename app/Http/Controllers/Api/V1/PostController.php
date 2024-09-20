@@ -68,8 +68,8 @@ class PostController extends BaseController
         $fileUrl = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            if (in_array($file->getMimeType(), $allowedFileTypes)) {
-                $filePath = $file->store('uploads', 'public');
+            if (in_array($file->getMimeType(), haystack: $allowedFileTypes)) {
+                $filePath = $file->store('uploads/posts', 'public');
                 $fileUrl = '/storage/' . $filePath;
             } else {
                 return $this->sendError('Invalid file type.');
@@ -211,7 +211,7 @@ class PostController extends BaseController
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             if (in_array($file->getMimeType(), $this->getAllowedFileTypes())) {
-                $filePath = $file->store('uploads', 'public');
+                $filePath = $file->store('uploads/posts', 'public');
                 $fileUrl = '/storage/' . $filePath; // Update to new URL
             } else {
                 return $this->sendError('Invalid file type.');
@@ -272,9 +272,11 @@ class PostController extends BaseController
     protected function getAllowedFileTypes()
     {
         return [
+            'image/webp',
             'image/jpeg',
             'image/png',
             'image/jpg',
+            'image/svg+xml',
             'image/gif',
             'application/pdf',
             'text/plain',

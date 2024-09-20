@@ -30,13 +30,13 @@ Route::prefix('v1')->group(function () {
             Route::get('users', [AdminController::class, 'listUsers']);
             Route::delete('users/{id}', [AdminController::class, 'destroyUser']); // Delete user
             Route::get('uploads', [AdminController::class, 'listUploads']);
-            Route::delete('uploads/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
+            Route::delete('uploads/posts/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
         });
 
         // ProfileController routes
-        Route::get('profile', [ProfileController::class, 'profile']);
-        Route::put('profile', [ProfileController::class, 'updateProfile']);
-        Route::delete('profile', [ProfileController::class, 'deleteProfile']);
+        Route::get('profile', [ProfileController::class, 'show']);
+        Route::put('profile', [ProfileController::class, 'update']);
+        Route::delete('profile', [ProfileController::class, 'delete']);
 
         // BlogController routes
         Route::post('blogs', [BlogController::class, 'store']);

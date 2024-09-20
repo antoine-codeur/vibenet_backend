@@ -1535,7 +1535,7 @@
                     "Profile"
                 ],
                 "summary": "Get the authenticated user's profile",
-                "operationId": "74bd0f9272b49f847e45d0f56cfc43a7",
+                "operationId": "dffac35700b3186de8d19cc212fe0285",
                 "responses": {
                     "200": {
                         "description": "User profile retrieved",
@@ -1575,7 +1575,7 @@
                     "Profile"
                 ],
                 "summary": "Update the authenticated user's profile",
-                "operationId": "1368e6532736dc719eac2c6b83882fb9",
+                "operationId": "d682da2fd566e34f597e169ac582ad3f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1596,6 +1596,16 @@
                                         "description": "Password of the user",
                                         "type": "string",
                                         "example": "new_password123"
+                                    },
+                                    "profile_picture": {
+                                        "description": "URL of the user's profile picture",
+                                        "type": "string",
+                                        "example": "https://example.com/path/to/profile.jpg"
+                                    },
+                                    "bio": {
+                                        "description": "Short bio of the user",
+                                        "type": "string",
+                                        "example": "Software Developer with 5 years of experience."
                                     }
                                 },
                                 "type": "object"
@@ -1642,7 +1652,7 @@
                     "Profile"
                 ],
                 "summary": "Delete the authenticated user's profile",
-                "operationId": "caf0b8e222e7e9d877bb4b0fdaf2fd24",
+                "operationId": "1ff6008fa8add2b38d7da7362d84e007",
                 "responses": {
                     "200": {
                         "description": "Profile deleted successfully",
@@ -1795,7 +1805,6 @@
                 "type": "object"
             },
             "User": {
-                "title": "User",
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1807,6 +1816,12 @@
                     "email": {
                         "type": "string",
                         "format": "email"
+                    },
+                    "profile_picture": {
+                        "type": "string"
+                    },
+                    "bio": {
+                        "type": "string"
                     },
                     "created_at": {
                         "type": "string",

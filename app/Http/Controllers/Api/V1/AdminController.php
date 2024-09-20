@@ -270,7 +270,7 @@ class AdminController extends BaseController
     public function listUploads()
     {
         // Retrieve all files
-        $files = Storage::disk('public')->allFiles('uploads');
+        $files = Storage::disk('public')->allFiles('uploads/posts');
 
         // Filter out unwanted files like .DS_Store
         $filteredFiles = array_filter($files, function ($file) {

@@ -3,6 +3,7 @@
 namespace App\Models;
   
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -11,11 +12,12 @@ use Laravel\Sanctum\HasApiTokens;
  * @OA\Schema(
  *     schema="User",
  *     type="object",
- *     title="User",
  *     properties={
  *         @OA\Property(property="id", type="integer", format="int64"),
  *         @OA\Property(property="name", type="string"),
  *         @OA\Property(property="email", type="string", format="email"),
+ *         @OA\Property(property="profile_picture", type="string"),
+ *         @OA\Property(property="bio", type="string"),
  *         @OA\Property(property="created_at", type="string", format="date-time"),
  *         @OA\Property(property="updated_at", type="string", format="date-time")
  *     }
@@ -34,7 +36,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-    ];
+        'profile_picture',
+        'bio',
+    ];    
   
     /**
      * The attributes that should be hidden for serialization.
