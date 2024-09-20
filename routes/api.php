@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\AdminController;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\BlogController;
 use App\Http\Controllers\API\V1\CommentController;
@@ -18,7 +19,20 @@ Route::prefix('v1')->group(function () {
 
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
-        
+        // AdminController routes
+        Route::prefix('admin')->middleware(['admin'])->group(function () {
+            Route::get('blogs', [AdminController::class, 'listBlogs']);
+            Route::delete('blogs/{id}', [AdminController::class, 'destroyBlog']); // Add method to delete blog
+            Route::get('posts', [AdminController::class, 'listPosts']);
+            Route::delete('posts/{id}', [AdminController::class, 'destroyPost']); // Delete post
+            Route::get('comments', [AdminController::class, 'listComments']);
+            Route::delete('comments/{id}', [AdminController::class, 'destroyComment']); // Delete comment
+            Route::get('users', [AdminController::class, 'listUsers']);
+            Route::delete('users/{id}', [AdminController::class, 'destroyUser']); // Delete user
+            Route::get('uploads', [AdminController::class, 'listUploads']);
+            Route::delete('uploads/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
+        });
+
         // ProfileController routes
         Route::get('profile', [ProfileController::class, 'profile']);
         Route::put('profile', [ProfileController::class, 'updateProfile']);
