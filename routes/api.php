@@ -35,7 +35,7 @@ Route::prefix('v1')->group(function () {
 
         // ProfileController routes
         Route::get('profile', [ProfileController::class, 'show']);
-        Route::put('profile', [ProfileController::class, 'update']);
+        Route::post('profile', [ProfileController::class, 'update']);
         Route::delete('profile', [ProfileController::class, 'delete']);
 
         // BlogController routes
@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
         Route::post('blogs/{blogId}/posts', [PostController::class, 'store']); // Créer un post
         Route::get('blogs/{blogId}/posts', [PostController::class, 'index']); // Récupérer les posts d'un blog
         Route::get('posts/{id}', [PostController::class, 'show']); // Récupérer un post par ID
-        Route::put('posts/{id}', [PostController::class, 'update']); // Mettre à jour un post
+        Route::post('posts/{id}/update', [PostController::class, 'update']); // Mettre à jour un post avec POST
         Route::delete('posts/{id}', [PostController::class, 'destroy']); // Supprimer un post
 
         // CommentController routes

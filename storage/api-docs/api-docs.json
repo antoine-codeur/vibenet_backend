@@ -1383,12 +1383,78 @@
                     }
                 ]
             },
-            "put": {
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a post",
+                "operationId": "8fb9e5c3ba57e2f3e8132eb58603be93",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/posts/{id}/update": {
+            "post": {
                 "tags": [
                     "Posts"
                 ],
                 "summary": "Update a post",
-                "operationId": "c370d1b954b66963a8cb7758b219bea3",
+                "operationId": "383ce8b9e6c47ed8db921b12efe51ac3",
                 "parameters": [
                     {
                         "name": "id",
@@ -1463,70 +1529,6 @@
                         "bearerAuth": []
                     }
                 ]
-            },
-            "delete": {
-                "tags": [
-                    "Posts"
-                ],
-                "summary": "Delete a post",
-                "operationId": "8fb9e5c3ba57e2f3e8132eb58603be93",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Post deleted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Post deleted successfully."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Post not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Post not found."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
             }
         },
         "/api/v1/profile": {
@@ -1570,40 +1572,35 @@
                     }
                 ]
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Profile"
                 ],
                 "summary": "Update the authenticated user's profile",
-                "operationId": "d682da2fd566e34f597e169ac582ad3f",
+                "operationId": "55fd80581c2975882e050efd0f2424d8",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "name": {
-                                        "description": "Name of the user",
                                         "type": "string",
                                         "example": "John Doe"
                                     },
                                     "email": {
-                                        "description": "Email of the user",
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "example": "user@example.com"
                                     },
                                     "password": {
-                                        "description": "Password of the user",
                                         "type": "string",
                                         "example": "new_password123"
                                     },
                                     "profile_picture": {
-                                        "description": "URL of the user's profile picture",
                                         "type": "string",
-                                        "example": "https://example.com/path/to/profile.jpg"
+                                        "format": "binary"
                                     },
                                     "bio": {
-                                        "description": "Short bio of the user",
                                         "type": "string",
                                         "example": "Software Developer with 5 years of experience."
                                     }

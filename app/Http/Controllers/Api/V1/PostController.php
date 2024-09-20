@@ -151,8 +151,8 @@ class PostController extends BaseController
     }
 
     /**
-     * @OA\Put(
-     *     path="/api/v1/posts/{id}",
+     * @OA\Post(
+     *     path="/api/v1/posts/{id}/update",
      *     summary="Update a post",
      *     tags={"Posts"},
      *     security={{"bearerAuth": {}}},
@@ -191,8 +191,10 @@ class PostController extends BaseController
      */
     public function update(Request $request, $id)
     {
+        \Log::info('Update request data: ', $request->all());
+
         $validator = Validator::make($request->all(), [
-            'content' => 'required',
+            'content' => 'required|string',
             'image' => 'nullable|file|max:2048|mimetypes:' . implode(',', $this->getAllowedFileTypes()),
             'type' => 'nullable|string',
         ]);
