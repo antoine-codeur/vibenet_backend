@@ -706,6 +706,9 @@
                                             "image": {
                                                 "type": "string"
                                             },
+                                            "logo": {
+                                                "type": "string"
+                                            },
                                             "owner": {
                                                 "properties": {
                                                     "id": {
@@ -761,6 +764,10 @@
                                         "example": "This is my first blog."
                                     },
                                     "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "logo": {
                                         "type": "string",
                                         "format": "binary"
                                     }
@@ -848,6 +855,9 @@
                                         "image": {
                                             "type": "string"
                                         },
+                                        "logo": {
+                                            "type": "string"
+                                        },
                                         "owner": {
                                             "properties": {
                                                 "id": {
@@ -912,14 +922,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
+                    "required": false,
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "description"
-                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -930,6 +936,10 @@
                                         "example": "Updated description."
                                     },
                                     "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "logo": {
                                         "type": "string",
                                         "format": "binary"
                                     }
@@ -963,6 +973,29 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Blog not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error."
+                                        },
+                                        "data": {
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
