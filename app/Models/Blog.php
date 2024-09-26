@@ -25,7 +25,7 @@ class Blog extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'owner_id', 'image' // Added image to fillable attributes
+        'name', 'description', 'owner_id', 'image', 'logo'
     ];
 
     /**

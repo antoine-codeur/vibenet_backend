@@ -1,27 +1,27 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class AddLogoToBlogsTable extends Migration
 {
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('blogs', function (Blueprint $table) {
-            $table->string('image')->nullable();
+            $table->string('logo')->nullable()->after('image'); // add 'logo' after 'image'
         });
     }
+
     /**
      * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('blogs', function (Blueprint $table) {
-            $table->dropColumn('image');
+            $table->dropColumn('logo'); // Remove 'logo'
         });
     }
-};
+}

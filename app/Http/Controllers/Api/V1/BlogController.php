@@ -24,6 +24,7 @@ class BlogController extends BaseController
      *             @OA\Property(property="name", type="string"),
      *             @OA\Property(property="description", type="string"),
      *             @OA\Property(property="image", type="string"),
+     *             @OA\Property(property="logo", type="string"),
      *             @OA\Property(property="owner", type="object",
      *                 @OA\Property(property="id", type="integer"),
      *                 @OA\Property(property="name", type="string"),
@@ -53,7 +54,8 @@ class BlogController extends BaseController
      *                 required={"name", "description"},
      *                 @OA\Property(property="name", type="string", example="My First Blog"),
      *                 @OA\Property(property="description", type="string", example="This is my first blog."),
-     *                 @OA\Property(property="image", type="string", format="binary")
+     *                 @OA\Property(property="image", type="string", format="binary"),
+     *                 @OA\Property(property="logo", type="string", format="binary")
      *             )
      *         )
      *     ),
@@ -87,16 +89,21 @@ class BlogController extends BaseController
             'name' => 'required',
             'description' => 'required',
             'image' => 'nullable|image|max:2048', // Validate image
+            'logo' => 'nullable|image|max:1024', // Validate logo
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        // Handle image upload
+        // Handle image and logo upload
         $imagePath = null;
+        $logoPath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('uploads/blog_images', 'public');
+        }
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('uploads/blog_logos', 'public');
         }
 
         // Create the blog
@@ -105,6 +112,7 @@ class BlogController extends BaseController
             'description' => $request->description,
             'owner_id' => auth()->id(), // Owner is the authenticated user
             'image' => $imagePath, // Save image path
+            'logo' => $logoPath, // Save logo path
         ]);
 
         return $this->sendResponse($blog, 'Blog created successfully.', 201);
@@ -130,6 +138,7 @@ class BlogController extends BaseController
      *             @OA\Property(property="name", type="string"),
      *             @OA\Property(property="description", type="string"),
      *             @OA\Property(property="image", type="string"),
+     *             @OA\Property(property="logo", type="string"),
      *             @OA\Property(property="owner", type="object",
      *                 @OA\Property(property="id", type="integer"),
      *                 @OA\Property(property="name", type="string"),
@@ -170,14 +179,14 @@ class BlogController extends BaseController
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
-     *         required=true,
+     *         required=false,
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"name", "description"},
      *                 @OA\Property(property="name", type="string", example="Updated Blog Name"),
      *                 @OA\Property(property="description", type="string", example="Updated description."),
-     *                 @OA\Property(property="image", type="string", format="binary")
+     *                 @OA\Property(property="image", type="string", format="binary"),
+     *                 @OA\Property(property="logo", type="string", format="binary")
      *             )
      *         )
      *     ),
@@ -193,42 +202,65 @@ class BlogController extends BaseController
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Blog not found."),
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation Error."),
+     *             @OA\Property(property="data", type="object")
+     *         )
      *     )
      * )
      */
     public function update(Request $request, $id)
     {
-        // Validate data
+        // Trouver le blog
+        $blog = Blog::find($id);
+        if (!$blog) {
+            return $this->sendError('Blog not found.');
+        }
+
+        // Validation des fichiers image et logo uniquement
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'nullable|image|max:2048', // Validate image
+            'image' => 'nullable|image|max:2048', // Validation de l'image
+            'logo' => 'nullable|image|max:1024', // Validation du logo
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $blog = Blog::find($id);
-        if (!$blog) {
-            return $this->sendError('Blog not found.');
-        }
-
-        // Handle image upload and deletion of the old image
+        // Gestion du téléchargement de l'image
         if ($request->hasFile('image')) {
-            // Delete old image if it exists
-            $this->deleteBlogImage($blog->image);
-
-            // Store new image and get the path
+            $this->deleteBlogImage($blog->image); // Suppression de l'ancienne image si nécessaire
             $imagePath = $request->file('image')->store('uploads/blog_images', 'public');
-            $blog->image = $imagePath; // Update image path
+            $blog->image = $imagePath; // Mise à jour du chemin de l'image
         }
 
-        // Update blog with other fields
-        $blog->update($request->only(['name', 'description'])); // Exclude 'image' from here as it's already set
+        // Gestion du téléchargement du logo
+        if ($request->hasFile('logo')) {
+            $this->deleteBlogImage($blog->logo); // Suppression de l'ancien logo si nécessaire
+            $logoPath = $request->file('logo')->store('uploads/blog_logos', 'public');
+            $blog->logo = $logoPath; // Mise à jour du chemin du logo
+        }
+
+        // Mise à jour du nom et de la description si présents dans la requête
+        if ($request->filled('name')) {
+            $blog->name = $request->input('name');
+        }
+
+        if ($request->filled('description')) {
+            $blog->description = $request->input('description');
+        }
+
+        // Sauvegarder les changements
+        $blog->save();
 
         return $this->sendResponse($blog, 'Blog updated successfully.');
     }
+
     /**
      * @OA\Delete(
      *     path="/api/v1/blogs/{id}",
@@ -266,34 +298,42 @@ class BlogController extends BaseController
             return $this->sendError('Blog not found.');
         }
 
-        // Delete image if it exists
+        // Delete image and logo if they exist
         if ($blog->image) {
             Storage::disk('public')->delete($blog->image);
+        }
+        if ($blog->logo) {
+            Storage::disk('public')->delete($blog->logo);
         }
 
         $blog->delete();
         return $this->sendResponse([], 'Blog deleted successfully.');
     }
+
+    /**
+     * Helper function to delete an image or logo.
+     */
     public function deleteBlogImage($oldImagePath)
     {
         if ($oldImagePath) {
-            Log::info("Checking existence of blog image: $oldImagePath");
+            Log::info("Checking existence of image or logo: $oldImagePath");
 
             if (Storage::disk('public')->exists($oldImagePath)) {
                 if (Storage::disk('public')->delete($oldImagePath)) {
-                    Log::info("Blog image deleted: $oldImagePath");
+                    Log::info("Image or logo deleted successfully: $oldImagePath");
                     return true;
                 } else {
-                    Log::error("Failed to delete blog image: $oldImagePath");
+                    Log::error("Failed to delete image or logo: $oldImagePath");
                     return false;
                 }
             } else {
-                Log::warning("Blog image not found: $oldImagePath");
+                Log::warning("Image or logo not found: $oldImagePath");
                 return false;
             }
         }
 
-        Log::warning("No blog image to delete.");
+        Log::warning("No image or logo to delete.");
         return false;
     }
+
 }
