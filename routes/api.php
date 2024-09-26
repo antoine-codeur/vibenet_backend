@@ -6,6 +6,7 @@ use App\Http\Controllers\API\V1\BlogController;
 use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
+use App\Http\Controllers\API\V1\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,11 @@ Route::prefix('v1')->group(function () {
         Route::get('blogs/{id}', [BlogController::class, 'show']);
         Route::post('blogs/{id}', [BlogController::class, 'update']);
         Route::delete('blogs/{id}', [BlogController::class, 'destroy']);
+
+        // SubscriptionController routes
+        Route::get('subscriptions', [SubscriptionController::class, 'index']);
+        Route::post('subscriptions/{blogId}', [SubscriptionController::class, 'subscribe']);
+        Route::delete('subscriptions/{blogId}', [SubscriptionController::class, 'unsubscribe']);
 
         // PostController routes
         Route::post('blogs/{blogId}/posts', [PostController::class, 'store']);
