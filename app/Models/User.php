@@ -63,4 +63,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function subscribedBlogs()
+    {
+        return $this->belongsToMany(Blog::class, 'blog_user');
+    }
 }

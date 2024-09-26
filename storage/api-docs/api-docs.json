@@ -1754,6 +1754,97 @@
                     }
                 ]
             }
+        },
+        "/api/v1/subscriptions": {
+            "get": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Get subscribed blogs",
+                "operationId": "24752636f8d944ceb934f9f9d92627be",
+                "responses": {
+                    "200": {
+                        "description": "List of subscribed blogs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Blog"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subscriptions/{blogId}": {
+            "post": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Subscribe to a blog",
+                "operationId": "8fceea9a7a4ac4e2f0d2b19f190689e0",
+                "parameters": [
+                    {
+                        "name": "blogId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully subscribed to the blog"
+                    },
+                    "404": {
+                        "description": "Blog not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Unsubscribe from a blog",
+                "operationId": "a50eca99972cb393d1d21eba29506e3d",
+                "parameters": [
+                    {
+                        "name": "blogId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unsubscribed from the blog"
+                    },
+                    "404": {
+                        "description": "Blog not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1933,6 +2024,10 @@
         {
             "name": "Profile",
             "description": "Profile"
+        },
+        {
+            "name": "Subscriptions",
+            "description": "Subscriptions"
         }
     ]
 }
