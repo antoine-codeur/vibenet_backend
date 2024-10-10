@@ -1302,6 +1302,195 @@
                 ]
             }
         },
+        "/api/v1/folders": {
+            "get": {
+                "tags": [
+                    "Folders"
+                ],
+                "summary": "Get all folders for the authenticated user",
+                "operationId": "c4578ee349c18ec5502d5092c2d9d45d",
+                "responses": {
+                    "200": {
+                        "description": "List of folders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Folder"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Folders"
+                ],
+                "summary": "Create a new folder",
+                "operationId": "1d667ce13f69eb50f7ef98d382ccbbec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "My Folder"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Folder created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Folder"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/folders/{folderId}/add-blog": {
+            "post": {
+                "tags": [
+                    "Folders"
+                ],
+                "summary": "Add a blog to a folder",
+                "operationId": "2faa8eb1337ac39b25b1e86ef1abb979",
+                "parameters": [
+                    {
+                        "name": "folderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "blog_id"
+                                ],
+                                "properties": {
+                                    "blog_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Blog added to folder successfully"
+                    },
+                    "404": {
+                        "description": "Folder not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/folders/{folderId}/remove-blog": {
+            "post": {
+                "tags": [
+                    "Folders"
+                ],
+                "summary": "Remove a blog from a folder",
+                "operationId": "076896705ee258581f397deba89f571e",
+                "parameters": [
+                    {
+                        "name": "folderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "blog_id"
+                                ],
+                                "properties": {
+                                    "blog_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Blog removed from folder successfully"
+                    },
+                    "404": {
+                        "description": "Folder not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/blogs/{blogId}/posts": {
             "get": {
                 "tags": [
@@ -1948,6 +2137,38 @@
                 },
                 "type": "object"
             },
+            "Folder": {
+                "required": [
+                    "id",
+                    "name",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "My Folder"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-09-19T08:53:09.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-09-19T08:53:09.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "Post": {
                 "required": [
                     "id",
@@ -2034,6 +2255,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Folders",
+            "description": "Operations related to folders"
+        },
         {
             "name": "Admin",
             "description": "Admin"

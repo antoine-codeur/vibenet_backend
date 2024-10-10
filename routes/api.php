@@ -4,6 +4,7 @@ use App\Http\Controllers\API\V1\AdminController;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\BlogController;
 use App\Http\Controllers\API\V1\CommentController;
+use App\Http\Controllers\API\V1\FolderController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\SubscriptionController;
@@ -52,6 +53,12 @@ Route::prefix('v1')->group(function () {
         Route::get('subscriptions', [SubscriptionController::class, 'index']);
         Route::post('subscriptions/{blogId}', [SubscriptionController::class, 'subscribe']);
         Route::delete('subscriptions/{blogId}', [SubscriptionController::class, 'unsubscribe']);
+
+        // FolderController routes
+        Route::get('/folders', [FolderController::class, 'index']);
+        Route::post('/folders', [FolderController::class, 'store']);
+        Route::post('/folders/{folderId}/add-blog', [FolderController::class, 'addBlogToFolder']);
+        Route::post('/folders/{folderId}/remove-blog', [FolderController::class, 'removeBlogFromFolder']);
 
         // PostController routes
         Route::post('blogs/{blogId}/posts', [PostController::class, 'store']);
