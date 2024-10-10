@@ -304,15 +304,23 @@ class AdminController extends BaseController
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/admin/uploads/{filename}",
+     *     path="/api/v1/admin/uploads/{folder}/{filename}",
      *     summary="Delete an uploaded file",
      *     tags={"Admin"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
+     *         name="folder",
+     *         in="path",
+     *         required=true,
+     *         description="Folder where the file is located",
+     *         @OA\Schema(type="string", enum={"profile_pictures", "posts", "blog_logos", "blog_images"})
+     *     ),
+     *     @OA\Parameter(
      *         name="filename",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         description="The file name, including extension",
+     *         @OA\Schema(type="string", example="image.jpg")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -332,14 +340,23 @@ class AdminController extends BaseController
      *     )
      * )
      */
-    public function deleteUpload($filename)
+    public function deleteUpload($folder, $filename)
     {
-        $filePath = 'public/uploads/' . $filename;
-        if (Storage::exists($filePath)) {
-            Storage::delete($filePath);
+        // Décoder les caractères spéciaux dans le nom du fichier
+        $decodedFilename = urldecode($filename);
+
+        // Construire le chemin complet du fichier
+        $filePath = 'uploads/' . $folder . '/' . $decodedFilename;
+
+        // Debugging: afficher le chemin du fichier pour vérifier
+        \Log::info("Deleting file: " . $filePath);
+
+        // Vérifier si le fichier existe et le supprimer
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
             return $this->sendResponse([], 'File deleted successfully.');
         }
 
-        return $this->sendError('File not found.');
+        return $this->sendError('File not found.', 404);
     }
 }

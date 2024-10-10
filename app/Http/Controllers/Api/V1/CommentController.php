@@ -157,6 +157,57 @@ class CommentController extends BaseController
 
     /**
      * @OA\Put(
+     *     path="/api/v1/comments/{id}/update",
+     *     summary="Update a comment",
+     *     tags={"Comments"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="Updated comment content"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Comment updated successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Comment")
+     *     )
+     * )
+     */
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $comment = Comment::find($id);
+        if (!$comment) {
+            return $this->sendError('Comment not found.');
+        }
+
+        if (auth()->id() !== $comment->user_id && auth()->id() !== $comment->post->owner_id) {
+            return $this->sendError('Unauthorized to update comment.');
+        }
+
+        $comment->content = $request->input('content');
+        $comment->save();
+
+        return $this->sendResponse($comment, 'Comment updated successfully.');
+    }
+
+    /**
+     * @OA\Put(
      *     path="/api/v1/comments/{id}/toggle",
      *     summary="Toggle comment visibility",
      *     tags={"Comments"},

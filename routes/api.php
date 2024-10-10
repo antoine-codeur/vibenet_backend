@@ -8,14 +8,13 @@ use App\Http\Controllers\API\V1\FolderController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\ProfileController;
 use App\Http\Controllers\API\V1\SubscriptionController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-
+    // AuthController routes
     Route::controller(AuthController::class)->group(function(){
-        Route::post('register', 'register');
-        Route::post('login', 'login');
+        Route::post('register', 'register')->name('register');
+        Route::post('login', 'login')->name('login');
     });
 
     // BlogController index (non-Authenticated)
@@ -35,7 +34,9 @@ Route::prefix('v1')->group(function () {
             Route::get('users', [AdminController::class, 'listUsers']);
             Route::delete('users/{id}', [AdminController::class, 'destroyUser']); // Delete user
             Route::get('uploads', [AdminController::class, 'listUploads']);
-            Route::delete('uploads/{filename}', [AdminController::class, 'deleteUpload']); // Delete upload
+            Route::delete('uploads/{folder}/{filename}', [AdminController::class, 'deleteUpload'])
+                ->where('folder', 'profile_pictures|posts|blog_logos|blog_images')
+                ->where('filename', '[\w\.\-]+');
         });
 
         // ProfileController routes
@@ -70,6 +71,7 @@ Route::prefix('v1')->group(function () {
         // CommentController routes
         Route::post('posts/{postId}/comments', [CommentController::class, 'store']);
         Route::get('posts/{postId}/comments', [CommentController::class, 'index']);
+        Route::post('comments/{id}/update', [CommentController::class, 'update']);
         Route::delete('comments/{id}', [CommentController::class, 'destroy']);
         Route::put('comments/{id}/toggle', [CommentController::class, 'toggleVisibility']);
     });

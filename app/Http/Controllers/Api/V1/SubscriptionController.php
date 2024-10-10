@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends BaseController
@@ -25,7 +24,7 @@ class SubscriptionController extends BaseController
     public function index()
     {
         $user = Auth::user();
-        $subscribedBlogs = $user->subscribedBlogs; // Assuming 'subscribedBlogs' relationship is defined in User model
+        $subscribedBlogs = $user->subscribedBlogs;
 
         return $this->sendResponse($subscribedBlogs, 'Subscribed blogs retrieved successfully.');
     }
@@ -101,6 +100,18 @@ class SubscriptionController extends BaseController
         // Unsubscribe the user from the blog
         $user->subscribedBlogs()->detach($blogId);
 
-        return $this->sendResponse([], 'Successfully unsubscribed from the blog.');
+        // Remove the blog from all folders the user has
+        $user->folders()->whereHas('blogs', function ($query) use ($blogId) {
+            $query->where('blog_id', $blogId);
+        })->each(function ($folder) use ($blogId) {
+            $folder->blogs()->detach($blogId);
+
+            // If the folder is empty, delete it
+            if ($folder->blogs()->count() === 0) {
+                $folder->delete();
+            }
+        });
+
+        return $this->sendResponse([], 'Successfully unsubscribed from the blog and removed from folders.');
     }
 }
