@@ -63,8 +63,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Define the relationship with the subscribed blogs.
+     */
     public function subscribedBlogs()
     {
         return $this->belongsToMany(Blog::class, 'blog_user');
+    }
+
+    /**
+     * Define the relationship with folders.
+     * Each user can have many folders.
+     */
+    public function folders()
+    {
+        return $this->hasMany(Folder::class);
     }
 }

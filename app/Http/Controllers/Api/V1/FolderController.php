@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Models\Folder;
+use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @OA\Tag(
@@ -17,12 +19,12 @@ class FolderController extends BaseController
     /**
      * @OA\Get(
      *     path="/api/v1/folders",
-     *     summary="Get all folders for the authenticated user",
+     *     summary="Get all folders for the authenticated user, including blogs in each folder",
      *     tags={"Folders"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="List of folders retrieved successfully",
+     *         description="List of folders retrieved successfully, including blogs",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Folder"))
      *     ),
      *     @OA\Response(
@@ -33,7 +35,11 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        $folders = Auth::user()->folders; // Assume the relationship is defined in the User model
+        $user = Auth::user();
+
+        // Get the folders with their related blogs
+        $folders = $user->folders()->with('blogs')->get();
+
         return $this->sendResponse($folders, 'Folders retrieved successfully.');
     }
 
@@ -46,8 +52,9 @@ class FolderController extends BaseController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name"},
-     *             @OA\Property(property="name", type="string", example="My Folder")
+     *             required={"name", "blog_id"},
+     *             @OA\Property(property="name", type="string", example="My Folder"),
+     *             @OA\Property(property="blog_id", type="integer", example=1)
      *         )
      *     ),
      *     @OA\Response(
@@ -67,12 +74,31 @@ class FolderController extends BaseController
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
+        $request->validate([
+            'name' => 'required|string',
+            'blog_id' => 'required|integer|exists:blogs,id',
+        ]);
+
+        $user = Auth::user();
+
+        // Check if the blog is already in another folder of the user
+        if ($user->folders()->whereHas('blogs', function ($query) use ($request) {
+            $query->where('blog_id', $request->blog_id);
+        })->exists()) {
+            throw ValidationException::withMessages([
+                'blog_id' => 'This blog is already in another folder.',
+            ]);
+        }
+
+        // Create the folder and attach the blog to it
         $folder = Folder::create([
             'name' => $request->name,
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
         ]);
-        return $this->sendResponse($folder, 'Folder created successfully.');
+
+        $folder->blogs()->attach($request->blog_id);
+
+        return $this->sendResponse($folder->load('blogs'), 'Folder created successfully.', 201);
     }
 
     /**
@@ -103,6 +129,10 @@ class FolderController extends BaseController
      *         description="Folder not found"
      *     ),
      *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input"
+     *     ),
+     *     @OA\Response(
      *         response=401,
      *         description="Unauthorized"
      *     )
@@ -110,10 +140,31 @@ class FolderController extends BaseController
      */
     public function addBlogToFolder(Request $request, $folderId)
     {
-        $request->validate(['blog_id' => 'required|integer']);
+        $request->validate([
+            'blog_id' => 'required|integer|exists:blogs,id',
+        ]);
+
+        $user = Auth::user();
         $folder = Folder::findOrFail($folderId);
+
+        // Check if the user owns the folder
+        if ($folder->user_id !== $user->id) {
+            return $this->sendError('Unauthorized.', 401);
+        }
+
+        // Check if the blog is already in any of the user's folders
+        if ($user->folders()->whereHas('blogs', function ($query) use ($request) {
+            $query->where('blog_id', $request->blog_id);
+        })->exists()) {
+            throw ValidationException::withMessages([
+                'blog_id' => 'This blog is already in another folder.',
+            ]);
+        }
+
+        // Add the blog to the folder
         $folder->blogs()->attach($request->blog_id);
-        return $this->sendResponse([], 'Blog added to folder successfully.');
+
+        return $this->sendResponse($folder->load('blogs'), 'Blog added to folder successfully.');
     }
 
     /**
@@ -144,6 +195,10 @@ class FolderController extends BaseController
      *         description="Folder not found"
      *     ),
      *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input"
+     *     ),
+     *     @OA\Response(
      *         response=401,
      *         description="Unauthorized"
      *     )
@@ -151,9 +206,26 @@ class FolderController extends BaseController
      */
     public function removeBlogFromFolder(Request $request, $folderId)
     {
-        $request->validate(['blog_id' => 'required|integer']);
+        $request->validate([
+            'blog_id' => 'required|integer|exists:blogs,id',
+        ]);
+
+        $user = Auth::user();
         $folder = Folder::findOrFail($folderId);
+
+        // Check if the user owns the folder
+        if ($folder->user_id !== $user->id) {
+            return $this->sendError('Unauthorized.', 401);
+        }
+
+        // Remove the blog from the folder
         $folder->blogs()->detach($request->blog_id);
+
+        // If the folder is empty, delete it
+        if ($folder->blogs()->count() === 0) {
+            $folder->delete();
+        }
+
         return $this->sendResponse([], 'Blog removed from folder successfully.');
     }
 }

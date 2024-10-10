@@ -415,20 +415,37 @@
                 ]
             }
         },
-        "/api/v1/admin/uploads/{filename}": {
+        "/api/v1/admin/uploads/{folder}/{filename}": {
             "delete": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Delete an uploaded file",
-                "operationId": "be85d814084305f9f79cb0640bea2843",
+                "operationId": "e3c6dff223eb480f0c5a5a3064b5aa3f",
                 "parameters": [
+                    {
+                        "name": "folder",
+                        "in": "path",
+                        "description": "Folder where the file is located",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "profile_pictures",
+                                "posts",
+                                "blog_logos",
+                                "blog_images"
+                            ]
+                        }
+                    },
                     {
                         "name": "filename",
                         "in": "path",
+                        "description": "The file name, including extension",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "image.jpg"
                         }
                     }
                 ],
@@ -1256,6 +1273,61 @@
                 ]
             }
         },
+        "/api/v1/comments/{id}/update": {
+            "put": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Update a comment",
+                "operationId": "9db07a55d498bf5e5637b705b38b7bf2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Updated comment content"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/comments/{id}/toggle": {
             "put": {
                 "tags": [
@@ -1307,11 +1379,11 @@
                 "tags": [
                     "Folders"
                 ],
-                "summary": "Get all folders for the authenticated user",
+                "summary": "Get all folders for the authenticated user, including blogs in each folder",
                 "operationId": "c4578ee349c18ec5502d5092c2d9d45d",
                 "responses": {
                     "200": {
-                        "description": "List of folders retrieved successfully",
+                        "description": "List of folders retrieved successfully, including blogs",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1345,12 +1417,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name"
+                                    "name",
+                                    "blog_id"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "My Folder"
+                                    },
+                                    "blog_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -1426,6 +1503,9 @@
                     "404": {
                         "description": "Folder not found"
                     },
+                    "400": {
+                        "description": "Invalid input"
+                    },
                     "401": {
                         "description": "Unauthorized"
                     }
@@ -1479,6 +1559,9 @@
                     },
                     "404": {
                         "description": "Folder not found"
+                    },
+                    "400": {
+                        "description": "Invalid input"
                     },
                     "401": {
                         "description": "Unauthorized"
