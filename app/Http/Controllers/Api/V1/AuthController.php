@@ -139,4 +139,27 @@ class AuthController extends BaseController
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
     }
+    /**
+     * @OA\Post(
+     *     path="/api/v1/logout",
+     *     summary="Logout user (revoke token)",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User logged out successfully.")
+     *         )
+     *     )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        // Revoke the token that was used to authenticate the current request
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->sendResponse([], 'User logged out successfully.');
+    }
 }

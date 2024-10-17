@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
     Route::controller(AuthController::class)->group(function(){
         Route::post('register', 'register')->name('register');
         Route::post('login', 'login')->name('login');
+        Route::post('logout', 'logout')->name('logout')->middleware('auth:sanctum');
     });
 
     // BlogController index (non-Authenticated)
@@ -71,6 +72,7 @@ Route::prefix('v1')->group(function () {
         // CommentController routes
         Route::post('posts/{postId}/comments', [CommentController::class, 'store']);
         Route::get('posts/{postId}/comments', [CommentController::class, 'index']);
+        
         Route::post('comments/{id}/update', [CommentController::class, 'update']);
         Route::delete('comments/{id}', [CommentController::class, 'destroy']);
         Route::put('comments/{id}/toggle', [CommentController::class, 'toggleVisibility']);
